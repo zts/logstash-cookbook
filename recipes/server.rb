@@ -20,33 +20,39 @@
 
 include_recipe "java"
 
-directory node['logstash']['install_path'] do
-  owner "nobody"
-  group "nogroup"
+%w{tokyocabinet libevent grok}.each do |pkg|
+  package pkg
 end
 
-cookbook_file "/etc/init.d/logstash" do
-  source "logstash.init"
+directory node['logstash']['install_path'] do
+  owner "nobody"
+  group "nobody"
+end
+
+template "/etc/init.d/logstash" do
+  source "logstash.init.erb"
   owner  "root"
   group  "root"
   mode   "755"
 end
 
-cookbook_file "#{node['logstash']['install_path']}/logstash-monolithic.jar" do
+remote_file "#{node['logstash']['install_path']}/logstash-monolithic.jar" do
   source "#{node['logstash']['source_path']}/logstash-#{node['logstash']['version']}-monolithic.jar"
   owner "nobody"
-  group "nogroup"
+  group "nobody"
   checksum node['logstash']['checksum']
-  notifies :restart, "service[logstash-agent]"
-  notifies :restart, "service[logstash-web]"
+  notifies :restart, "service[logstash]"
 end
 
-template "#{node['logstash']['install_path']}/agent.conf" do
-  source "agent.conf.erb"
+template "#{node['logstash']['install_path']}/server.conf" do
+  source "server.conf.erb"
   owner "nobody"
-  group "nogroup"
-  notifies :restart, "service[logstash-agent]"
+  group "nobody"
+  notifies :restart, "service[logstash]"
 end
 
-runit_service "logstash-agent"
-runit_service "logstash-web"
+service "logstash" do
+  supports :restart => true, :status => true
+  action [:enable, :start]
+end
+

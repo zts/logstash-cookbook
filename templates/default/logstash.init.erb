@@ -1,0 +1,66 @@
+#!/bin/bash
+#
+# logstash	This starts and stops Logstash agents
+#
+# chkconfig: 2345 13 87
+# description: This starts Logstash agents.
+#
+# config: /etc/sysconfig/logstash
+
+# Source function library.
+. /etc/init.d/functions
+
+# Default config, enough to get started without a sysconfig file.
+JAVA_HOME=/usr/java/default
+EXTRA_OPTIONS=-Xmx128m
+LOGSTASH_HOME=<%= @node['logstash']['install_path'] %>
+LOGSTASH_JAR="logstash-monolithic.jar"
+
+if [ -f /etc/sysconfig/logstash ]; then
+        . /etc/sysconfig/logstash
+fi
+
+PATH=$JAVA_HOME/bin:$PATH
+
+start() {
+        echo -n "Starting Logstash: "
+        cd $LOGSTASH_HOME
+        daemon --user root nohup java $OPTIONS -jar $LOGSTASH_JAR agent -f server.conf -- web --backend elasticsearch:///?local >/dev/null 2>&1 &
+
+        RETVAL=$?
+        echo
+        [ $RETVAL -eq 0 ] && touch /var/lock/subsys/logstash
+        return $RETVAL
+}
+
+stop() {
+        echo -n "Shutting down Logstash agents: "
+        echo
+	pgrep -f logstash | xargs kill
+        sleep 2
+        echo
+        rm -f /var/lock/subsys/logstash
+        rm -f /var/run/logstash/daemon.pid
+        return 0
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    status)
+        status -p /var/run/logstash/daemon.pid logstash
+        ;;
+    restart)
+        stop
+        start
+        ;;
+    *)
+        echo "Usage:  {start|stop|status|restart}"
+        exit 1
+        ;;
+esac
+exit $?
