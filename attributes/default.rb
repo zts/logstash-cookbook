@@ -17,6 +17,7 @@
 # limitations under the License.
 #
 
-default['logstash']['version'] = "1.0.14"
-default['logstash']['checksum'] = "06fc4d82dc87d65a581c881b94cb34735bab5186121cd05f3daa5e80f3357807"
+default['logstash']['version'] = "1.0.17"
+default['logstash']['checksum'] = "caba048cb1ab3cc608d4569246f8b7effbb8272865c7864a662566c30517316c"
+default['logstaion']['source_path'] = "http://semicomplete.com/files/logstash/"
 default['logstash']['install_path'] = "/srv/logstash"

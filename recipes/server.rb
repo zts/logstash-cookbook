@@ -1,7 +1,8 @@
 #
 # Cookbook Name:: logstash
-# Recipe:: default
+# Recipe:: server
 #
+# Copyright 2011, Zachary Stevens
 # Copyright 2011, Joshua Timberman
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,7 +25,14 @@ directory node['logstash']['install_path'] do
   group "nogroup"
 end
 
-remote_file "#{node['logstash']['install_path']}/logstash-monolithic.jar" do
+cookbook_file "/etc/init.d/logstash" do
+  source "logstash.init"
+  owner  "root"
+  group  "root"
+  mode   "755"
+end
+
+cookbook_file "#{node['logstash']['install_path']}/logstash-monolithic.jar" do
   source "#{node['logstash']['source_path']}/logstash-#{node['logstash']['version']}-monolithic.jar"
   owner "nobody"
   group "nogroup"
