@@ -12,9 +12,10 @@
 
 # Default config, enough to get started without a sysconfig file.
 JAVA_HOME=/usr/java/default
-EXTRA_OPTIONS=-Xmx128m
 LOGSTASH_HOME=<%= @node['logstash']['install_path'] %>
 LOGSTASH_JAR="logstash-monolithic.jar"
+LOGSTASH_CONFIG="<%= @config_file %>"
+LOGSTASH_EXTRA_OPTIONS="<%= @extra_options %>"
 
 if [ -f /etc/sysconfig/logstash ]; then
         . /etc/sysconfig/logstash
@@ -25,7 +26,7 @@ PATH=$JAVA_HOME/bin:$PATH
 start() {
         echo -n "Starting Logstash: "
         cd $LOGSTASH_HOME
-        daemon --user root nohup java $OPTIONS -jar $LOGSTASH_JAR agent -f server.conf -- web --backend elasticsearch:///?local >/dev/null 2>&1 &
+        daemon --user root nohup java -jar $LOGSTASH_JAR agent -f $LOGSTASH_CONFIG $LOGSTASH_EXTRA_OPTIONS >/dev/null 2>&1 &
 
         RETVAL=$?
         echo

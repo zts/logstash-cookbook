@@ -34,6 +34,10 @@ template "/etc/init.d/logstash" do
   owner  "root"
   group  "root"
   mode   "755"
+  variables ({
+               "config_file" => "server.conf",
+               "extra_options" => "-- web --backend elasticsearch:///?local"
+             })
 end
 
 remote_file "#{node['logstash']['install_path']}/logstash-monolithic.jar" do
