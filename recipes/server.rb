@@ -52,7 +52,7 @@ template "#{node['logstash']['install_path']}/server.conf" do
 end
 
 service "logstash" do
-  supports :restart => true, :status => true
+  # supports :restart => true, :status => true
   action [:enable, :start]
 end
 

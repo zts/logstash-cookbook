@@ -1,5 +1,14 @@
 # Basic logstash server config
 input {
+  amqp {
+    <% amqp = node['logstash']['amqp'] %>
+    type => "all"
+    host => "<%= amqp['host'] %>"
+    port => "<%= amqp['port'] %>"
+    exchange_type => "<%= amqp['exchange_type'] %>"
+    name => "logstash"
+  }
+
   file {
     type => "syslog"
 
