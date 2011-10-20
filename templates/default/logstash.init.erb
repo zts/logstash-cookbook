@@ -26,9 +26,9 @@ PATH=$JAVA_HOME/bin:$PATH
 start() {
         echo -n "Starting Logstash: "
         cd $LOGSTASH_HOME
-        daemon --user root nohup java -jar $LOGSTASH_JAR agent -f $LOGSTASH_CONFIG $LOGSTASH_EXTRA_OPTIONS >/dev/null 2>&1 &
-
+        daemon --user root $( java -jar $LOGSTASH_JAR agent -f $LOGSTASH_CONFIG $LOGSTASH_EXTRA_OPTIONS <&- >/dev/null 2>&1 & echo $! > /var/run/logstash.pid )
         RETVAL=$?
+
         echo
         [ $RETVAL -eq 0 ] && touch /var/lock/subsys/logstash
         return $RETVAL
@@ -41,7 +41,7 @@ stop() {
         sleep 2
         echo
         rm -f /var/lock/subsys/logstash
-        rm -f /var/run/logstash/daemon.pid
+        rm -f /var/run/logstash.pid
         return 0
 }
 
@@ -53,7 +53,7 @@ case "$1" in
         stop
         ;;
     status)
-        status -p /var/run/logstash/daemon.pid logstash
+        status -p /var/run/logstash.pid logstash
         ;;
     restart)
         stop
