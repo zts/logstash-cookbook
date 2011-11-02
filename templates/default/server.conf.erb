@@ -66,5 +66,11 @@ output {
   # The 'embedded' option will cause logstash to run the elasticsearch
   # server in the same process, so you don't have to worry about
   # how to download, configure, or run elasticsearch!
+<% if node['logstash']['elasticsearch'] == 'embedded' -%>
   elasticsearch { embedded => true }
+<% elsif node['logstash']['elasticsearch'] == 'standalone' -%>
+   elasticsearch {
+     host => "<%= node['logstash']['es_host'] %>"
+   }
+<% end -%>
 }

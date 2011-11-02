@@ -28,3 +28,9 @@ default['logstash']['amqp'] = {
   'exchange_type' => 'fanout'
 }
 
+# Use the embedded elasticsearch by default.  To use a separate server:
+#
+# default['logstash']['elasticsearch'] = 'standalone'
+# default['logstash']['es_host'] = 'elasticsearch.example.com'
+
+default['logstash']['elasticsearch'] = 'embedded'

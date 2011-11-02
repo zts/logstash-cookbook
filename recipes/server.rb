@@ -29,6 +29,12 @@ directory node['logstash']['install_path'] do
   group "nobody"
 end
 
+extra_opts = "-- web "
+if node['logstash']['elasticsearch'] == 'embedded'
+  extra_opts << "--backend elasticsearch:///?local"
+elsif node['logstash']['elasticsearch'] == 'standalone'
+  extra_opts << "--backend elasticsearch://#{node['logstash']['es_host']}/"
+end
 template "/etc/init.d/logstash" do
   source "logstash.init.erb"
   owner  "root"
@@ -36,7 +42,7 @@ template "/etc/init.d/logstash" do
   mode   "755"
   variables ({
                "config_file" => "server.conf",
-               "extra_options" => "-- web --backend elasticsearch:///?local"
+               "extra_options" => extra_opts
              })
 end
 
