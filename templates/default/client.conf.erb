@@ -14,12 +14,12 @@ input {
 
  file {
    type => "apache-access"
-   path => "/var/log/apache2/access.log"
+   path => "/var/log/httpd/access*.log"
  }
 
  file {
    type => "apache-error"
-   path => "/var/log/apache2/error.log"
+   path => "/var/log/apache2/error*.log"
  }
 }
 
