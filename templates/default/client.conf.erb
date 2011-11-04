@@ -23,6 +23,14 @@ input {
  }
 }
 
+filter {
+  multiline {
+    type => "mcollective"
+    pattern => "^\s"
+    what => "previous"
+  }
+}
+
 output {
   # Emit events to stdout for easy debugging of what is going through
   # logstash.
