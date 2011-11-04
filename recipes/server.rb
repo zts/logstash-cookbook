@@ -20,13 +20,18 @@
 
 include_recipe "java"
 
+nobody_group = value_for_platform(
+  ["debian", "ubuntu"] => { "default" => "nogroup" },
+  "default" => "nobody"
+)
+
 %w{tokyocabinet libevent grok}.each do |pkg|
   package pkg
 end
 
 directory node['logstash']['install_path'] do
   owner "nobody"
-  group "nobody"
+  group nobody_group
 end
 
 extra_opts = "-- web "
@@ -41,7 +46,7 @@ template "/etc/init.d/logstash" do
   group  "root"
   mode   "755"
   variables ({
-               "config_file" => "server.conf",
+               "config_file" => "agent.conf",
                "extra_options" => extra_opts
              })
 end
@@ -49,15 +54,17 @@ end
 remote_file "#{node['logstash']['install_path']}/logstash-monolithic.jar" do
   source "#{node['logstash']['source_path']}/logstash-#{node['logstash']['version']}-monolithic.jar"
   owner "nobody"
-  group "nobody"
+  group nobody_group
   checksum node['logstash']['checksum']
-  notifies :restart, "service[logstash]"
+  notifies :restart, "service[logstash-agent]"
+  # notifies :restart, "service[logstash-web]"
+  # notifies :restart, "service[logstash]"
 end
 
-template "#{node['logstash']['install_path']}/server.conf" do
-  source "server.conf.erb"
+template "#{node['logstash']['install_path']}/agent.conf" do
+  source "agent.conf.erb"
   owner "nobody"
-  group "nobody"
+  group nobody_group
   notifies :restart, "service[logstash]"
 end
 
@@ -66,3 +73,5 @@ service "logstash" do
   action [:enable, :start]
 end
 
+# runit_service "logstash-agent"
+# runit_service "logstash-web"

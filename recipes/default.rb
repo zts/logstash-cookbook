@@ -17,28 +17,4 @@
 # limitations under the License.
 #
 
-include_recipe "java"
-
-directory "/srv/logstash" do
-  owner "nobody"
-  group "nogroup"
-end
-
-remote_file "#{node['logstash']['install_path']}/logstash-monolithic.jar" do
-  source "#{node['logstash']['source_path']}/logstash-#{node['logstash']['version']}-monolithic.jar"
-  owner "nobody"
-  group "nogroup"
-  checksum node['logstash']['checksum']
-  notifies :restart, "service[logstash-agent]"
-  notifies :restart, "service[logstash-web]"
-end
-
-template "#{node['logstash']['install_path']}/agent.conf" do
-  source "agent.conf.erb"
-  owner "nobody"
-  group "nogroup"
-  notifies :restart, "service[logstash-agent]"
-end
-
-runit_service "logstash-agent"
-runit_service "logstash-web"
+include_recipe "logstash::server"
