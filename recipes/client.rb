@@ -77,6 +77,15 @@ logstash_filter "mcollective" do
   what 'previous'
 end
 
+logstash_output "logstash" do
+  use_name true
+  # name 'logstash'
+  kind          'amqp'
+  host          node['logstash']['amqp']['host']
+  port          node['logstash']['amqp']['port']
+  exchange_type node['logstash']['amqp']['exchange_type']
+end
+
 service "logstash" do
   # supports :restart => true, :status => true
   action [:enable, :start]

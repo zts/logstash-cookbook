@@ -32,11 +32,15 @@ output {
   # logstash.
   # stdout { }
 
-  amqp {
-    <% amqp = node['logstash']['amqp'] %>
-    host => "<%= amqp['host'] %>"
-    port => "<%= amqp['port'] %>"
-    exchange_type => "<%= amqp['exchange_type'] %>"
-    name => "logstash"
+<% @outputs.each do |i| -%>
+  <%= i[:kind] %> {
+    <% i[:params].each do |k,v| -%>
+    <% if v.is_a?String -%>
+      <%= k %> => "<%= v %>"
+    <% else -%>
+      <%= k %> => <%= v %>
+    <% end -%>
+    <% end -%>
   }
+<% end -%>
 }
