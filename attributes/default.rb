@@ -32,5 +32,9 @@ default['logstash']['amqp'] = {
 #
 # default['logstash']['elasticsearch'] = 'standalone'
 # default['logstash']['es_host'] = 'elasticsearch.example.com'
-
+#
 default['logstash']['elasticsearch'] = 'embedded'
+
+default['logstash']['inputs'] = []
+default['logstash']['filters'] = []
+default['logstash']['outputs'] = []

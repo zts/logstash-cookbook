@@ -1,26 +1,16 @@
 # Basic logstash server config
 input {
-  file {
-    type => "syslog"
-
-    # Wildcards work, here :)
-    path => [ "/var/log/messages", "/var/log/secure", "/var/log/yum.log" ]
+<% @inputs.each do |i| -%>
+  <%= i[:kind] %> {
+    <% i[:params].each do |k,v| -%>
+    <% if v.is_a?String -%>
+      <%= k %> => "<%= v %>"
+    <% else -%>
+      <%= k %> => <%= v %>
+    <% end -%>
+    <% end -%>
   }
-
-  file {
-        type => "mcollective"
-	path => [ "/var/log/mcollective.log", "/var/log/mcollective-audit.log" ]
-  }
-
- file {
-   type => "apache-access"
-   path => "/var/log/httpd/access*.log"
- }
-
- file {
-   type => "apache-error"
-   path => "/var/log/apache2/error*.log"
- }
+<% end -%>
 }
 
 filter {

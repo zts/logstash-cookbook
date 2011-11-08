@@ -44,11 +44,31 @@ remote_file "#{node['logstash']['install_path']}/logstash-monolithic.jar" do
   notifies :restart, "service[logstash]"
 end
 
-template "#{node['logstash']['install_path']}/client.conf" do
-  source "client.conf.erb"
-  owner "nobody"
-  group "nobody"
-  notifies :restart, "service[logstash]"
+logstash_input "syslogs" do
+  kind 'file'
+  type 'syslog'
+  path ['/var/log/messages', '/var/log/secure', '/var/log/*.log']
+end
+logstash_input "apache-access" do
+  kind 'file'
+  type 'apache-access'
+  path '/var/log/httpd/access.log'
+end
+logstash_input "apache-error" do
+  kind 'file'
+  type 'apache-error'
+  path '/var/log/httpd/error.log'
+end
+
+logstash_input "mcollective.log" do
+  kind 'file'
+  type 'mcollective'
+  path '/var/log/mcollective.log'
+end
+logstash_input "mcollective-audit.log" do
+  kind 'file'
+  type 'mcollective-audit'
+  path '/var/log/mcollective-audit.log'
 end
 
 service "logstash" do
