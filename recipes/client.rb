@@ -70,6 +70,12 @@ logstash_input "mcollective-audit.log" do
   type 'mcollective-audit'
   path '/var/log/mcollective-audit.log'
 end
+logstash_filter "mcollective" do
+  kind 'multiline'
+  type 'mcollective'
+  pattern '^\s'
+  what 'previous'
+end
 
 service "logstash" do
   # supports :restart => true, :status => true

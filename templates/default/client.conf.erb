@@ -14,11 +14,17 @@ input {
 }
 
 filter {
-  multiline {
-    type => "mcollective"
-    pattern => "^\s"
-    what => "previous"
+<% @filters.each do |i| -%>
+  <%= i[:kind] %> {
+    <% i[:params].each do |k,v| -%>
+    <% if v.is_a?String -%>
+      <%= k %> => "<%= v %>"
+    <% else -%>
+      <%= k %> => <%= v %>
+    <% end -%>
+    <% end -%>
   }
+<% end -%>
 }
 
 output {
